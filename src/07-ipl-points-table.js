@@ -36,6 +36,52 @@
  *   // RCB: played=1, tied=1, points=1
  *   // Sorted: CSK(3), RCB(1), MI(0)
  */
+
 export function iplPointsTable(matches) {
-  // Your code here
+  if (!Array.isArray(matches) || matches.length === 0) return [];
+  
+  let response = {};
+  let teamTable = { team: '', played: 0, won: 0, lost: 0, tied: 0, noResult: 0, points: 0 }
+  
+  for (let i = 0; i < matches.length; i++) {
+    
+    if (!response[matches[i].team1]) {
+      response[matches[i].team1] = {...teamTable};
+    }
+    
+    if (!response[matches[i].team2]) {
+      response[matches[i].team2] = {...teamTable};
+    }
+    
+    response[matches[i].team1].team = matches[i].team1;
+    response[matches[i].team1].played++
+    response[matches[i].team2].team = matches[i].team2;
+    response[matches[i].team2].played++
+    
+    if (matches[i].result === "win") {
+      if (matches[i].winner === matches[i].team1) {
+        response[matches[i].team1].won++
+        response[matches[i].team1].points += 2
+        response[matches[i].team2].lost++
+      } else {
+        response[matches[i].team2].won++
+        response[matches[i].team2].points += 2
+        response[matches[i].team1].lost++
+      }
+    } else if (matches[i].result === "tie") {
+      response[matches[i].team1].tied++
+      response[matches[i].team1].points++
+      response[matches[i].team2].points++
+      response[matches[i].team2].tied++
+    } else if (matches[i].result === "no_result") {
+      response[matches[i].team1].noResult++
+      response[matches[i].team1].points++
+      response[matches[i].team2].noResult++
+      response[matches[i].team2].points++
+    }
+  }
+  
+  return Object.values(response).sort((a,b) => {
+    return b.points - a.points || a.team.localeCompare(b.team)
+  });
 }

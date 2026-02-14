@@ -46,4 +46,57 @@
  */
 export function railwayReservation(passengers, trains) {
   // Your code here
+  let response = []
+  let ticket = { name: "", trainNumber: 0, class: "", status: "waitlisted" };
+
+  if (!Array.isArray(passengers) || !Array.isArray(trains) || !passengers.length || !trains.length) return response;
+
+  for (let i = 0; i < passengers.length; i++) {
+    const trainNumber = passengers[i].trainNumber;
+    const seat = passengers[i].preferred;
+    const fallback = passengers[i].fallback
+
+    for (let j = 0; j < trains.length; j++) {
+      if (trainNumber === trains[j].trainNumber) {
+        if (trains[j].seats[seat] > 0) {
+          const newTicket = { ...ticket };
+          newTicket.name = passengers[i].name
+          newTicket.trainNumber = passengers[i].trainNumber
+          newTicket.class = passengers[i].preferred
+          newTicket.status = "confirmed"
+          trains[j].seats[seat]--
+          response.push(newTicket)
+        } else if (trains[j].seats[fallback] > 0) {
+          const newTicket = { ...ticket };
+          newTicket.name = passengers[i].name
+          newTicket.trainNumber = passengers[i].trainNumber
+          newTicket.class = passengers[i].fallback
+          newTicket.status = "confirmed"
+          trains[j].seats[fallback]--
+          response.push(newTicket)
+        } else {
+          const newTicket = { ...ticket };
+          newTicket.name = passengers[i].name
+          newTicket.trainNumber = passengers[i].trainNumber
+          newTicket.class = passengers[i].preferred
+          newTicket.status = "waitlisted"
+          response.push(newTicket)
+        }
+      } else {
+        if (response.length === 0) {
+          const newTicket = { ...ticket };
+          newTicket.name = passengers[i].name
+          newTicket.trainNumber = passengers[i].trainNumber
+          newTicket.class = null
+          newTicket.status = "train_not_found"
+          response.push(newTicket)
+        }
+      }
+    }
+
+
+  }
+
+  return response;
+
 }
